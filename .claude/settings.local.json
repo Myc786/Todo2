@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir)",
+      "Bash(dir /s)",
+      "Bash(npm run build)",
+      "Bash(git fetch --all --prune)",
+      "Bash(pip install -r requirements.txt)",
+      "Bash(python test_backend.py)",
+      "Bash(python test_integration_final.py)",
+      "Bash(python -c \"\nimport os\nos.environ[''TESTING''] = ''True''\nfrom app.main import app\nprint\\(''Backend is ready to start!''\\)\nprint\\(''Routes available:''\\)\nfor route in app.routes:\n    if hasattr\\(route, ''methods''\\) and hasattr\\(route, ''path''\\):\n        print\\(f''  {route.methods} {route.path}''\\)\n    elif hasattr\\(route, ''path''\\):\n        print\\(f''  GET {route.path}''\\)\n\")",
+      "Bash(python test_server_start.py)",
+      "Bash(python test_db_config.py:*)",
+      "Bash(timeout 10s uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-level info)",
+      "Bash(curl -s http://localhost:8000/health)",
+      "Bash(curl -s http://localhost:8000/)",
+      "Bash(curl -s -X GET \"http://localhost:8000/api/v1/tasks/\" -H \"accept: application/json\")",
+      "Bash(python init_db.py)",
+      "Bash(taskkill /IM uvicorn.exe /F)",
+      "Bash(taskkill /IM python.exe /F)",
+      "Bash(python test_auth_flow.py)",
+      "Bash(pip install bcrypt)",
+      "Bash(python test_basic_db.py)",
+      "Bash(curl -s -X POST \"http://localhost:8000/api/v1/auth/\" -H \"Content-Type: application/json\" -d '{\"\"email\"\":\"\"test@example.com\"\", \"\"password\"\":\"\"shortpass123\"\"}')",
+      "Bash(python test_full_flow.py)",
+      "Bash(dir package.json)",
+      "Bash(npm run dev)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(taskkill /f /pid 8188)",
+      "Bash(uvicorn app.main:app --reload --host 0.0.0.0 --port 8000)",
+      "Bash(curl http://localhost:8000/)",
+      "Bash(curl -X POST \"http://localhost:8000/api/v1/auth/signin\" -d \"email=test@example.com\" -d \"password=testpass\")",
+      "Bash(curl -X POST \"http://localhost:8000/api/v1/auth/signin\" -H \"Content-Type: application/x-www-form-urlencoded\" -d \"email=newuser@example.com&password=testpass123\")",
+      "Bash(git remote add origin https://github.com/Myc786/Todo2.git)",
+      "Bash(git add .)"
+    ]
+  }
+}

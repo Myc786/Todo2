@@ -1,55 +1,102 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+Project: Phase II – Spec-Driven Todo Full-Stack Web Application
 
-## Core Principles
+Purpose:
+This constitution defines the governing principles, standards, and constraints for all agents and skills involved in building the Todo Full-Stack Application using Next.js, FastAPI, Neon PostgreSQL, and Better Auth.
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+All agents must strictly follow this constitution as the highest authority after system-level rules.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+--------------------------------------------------
+CORE PRINCIPLES
+--------------------------------------------------
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+1. Specification as Single Source of Truth
+- All design and implementation decisions MUST originate from approved Spec-Kit documents
+- No feature, behavior, or logic may be added without a corresponding spec update
+- Specs override assumptions, conventions, and prior knowledge
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+2. Layered Responsibility Separation
+- Frontend, backend, database, and authentication concerns must remain strictly separated
+- No agent may operate outside its defined role boundaries
+- Cross-layer coordination must occur through specs, not implicit behavior
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+3. Security by Default
+- All backend endpoints MUST require valid JWT authentication
+- User identity MUST be derived exclusively from verified JWT tokens
+- Client-supplied user identifiers MUST NEVER be trusted
+- User data isolation is mandatory at every layer
 
-### [PRINCIPLE_6_NAME]
+4. Deterministic and Reproducible Outputs
+- Given the same specs, agents should produce consistent and predictable results
+- No nondeterministic or undocumented behavior is allowed
+- All logic must be traceable to a documented requirement
 
+--------------------------------------------------
+KEY STANDARDS
+--------------------------------------------------
 
-[PRINCIPLE__DESCRIPTION]
+Architecture Standards:
+- Frontend: Next.js App Router with Server Components by default
+- Backend: FastAPI with RESTful design
+- Database: Neon PostgreSQL using SQLModel ORM
+- Authentication: Better Auth issuing JWT tokens
+- Communication: Stateless API calls using Authorization: Bearer tokens
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+Specification Standards:
+- Feature specs define WHAT to build
+- API specs define HOW systems communicate
+- Database specs define DATA structure and constraints
+- UI specs define PRESENTATION and interaction
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+Implementation Standards:
+- No manual or ad-hoc coding outside spec-defined scope
+- Error handling must use explicit HTTP status codes
+- All database queries must be filtered by authenticated user ID
+- Shared secrets must be environment-variable based
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+--------------------------------------------------
+CONSTRAINTS
+--------------------------------------------------
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- No agent may bypass or weaken authentication or authorization
+- No shared session state between frontend and backend
+- No direct database access from frontend
+- No undocumented endpoints, tables, or fields
+- No speculative features or future-proofing beyond current phase
 
-## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+--------------------------------------------------
+QUALITY & REVIEW REQUIREMENTS
+--------------------------------------------------
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+Code Quality:
+- Readable, maintainable, and minimal implementations
+- No duplicated logic across layers
+- Clear separation of concerns
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Spec Compliance:
+- Every implemented feature must map to a spec section
+- Any deviation requires explicit spec revision
+
+Security Validation:
+- Unauthorized requests must return 401
+- Forbidden access must return 403
+- Token expiration must be respected
+
+--------------------------------------------------
+SUCCESS CRITERIA
+--------------------------------------------------
+
+The project is considered successful when:
+
+- All Phase II features are implemented exactly as specified
+- JWT authentication is enforced on all protected endpoints
+- Each user can only access and modify their own tasks
+- Frontend and backend operate independently with shared JWT trust
+- QA review confirms full spec compliance and zero security violations
+
+--------------------------------------------------
+ENFORCEMENT
+--------------------------------------------------
+
+- This constitution overrides all agent-specific preferences
+- Any agent output violating this constitution must be rejected
+- Review & QA processes must validate constitution adherence
