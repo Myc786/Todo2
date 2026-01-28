@@ -17,22 +17,40 @@ def signup(user_create: UserCreate, db: Session = Depends(get_session)):
             status_code=status.HTTP_409_CONFLICT,
             detail=str(e)
         )
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
     except Exception as e:
+        # Handle any unexpected errors
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred during registration"
         )
 
 @router.post("/signin")
-def signin(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_session)):
+def signin(
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_session)
+):
     """Authenticate user and return access token."""
-    user = authenticate_user(db=db, email=email, password=password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    try:
+        user = authenticate_user(db=db, email=email, password=password)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
-    access_token = create_auth_token(user.id)
-    return {"access_token": access_token, "token_type": "bearer"}
+        access_token = create_auth_token(user.id)
+        return {"access_token": access_token, "token_type": "bearer"}
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
+    except Exception as e:
+        # Handle any unexpected errors
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred during authentication"
+        )

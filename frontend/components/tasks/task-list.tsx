@@ -5,27 +5,68 @@ import { useAuth } from '@/lib/auth-context';
 import { taskApi } from '@/lib/api';
 import TaskItem from './task-item';
 
+interface Tag {
+  id: string;
+  name: string;
+  owner_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  completed: boolean;
+  priority: string;
+  due_date?: string;
+  recurrence_pattern?: string;
+  recurrence_end_date?: string;
+  owner_id: string;
+  created_at: string;
+  updated_at?: string;
+  tags?: Tag[];
+}
+
 export default function TaskList() {
   const { token, isAuthenticated, loading } = useAuth();
-  const [tasks, setTasks] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAuthenticated && token) {
       fetchTasks();
+      fetchTags();
     } else {
       setTasks([]);
+      setTags([]);
       setFetching(false);
     }
   }, [isAuthenticated, token]);
+
+  const fetchTags = async () => {
+    if (!token) return;
+
+    try {
+      const result = await tagApi.getAll(token);
+
+      if (result.success) {
+        setTags(result.data || []);
+      }
+    } catch (err) {
+      console.error('Error fetching tags:', err);
+    }
+  };
 
   const fetchTasks = async () => {
     if (!token) return;
 
     try {
       setFetching(true);
-      const result = await taskApi.getAll(token);
+      const result = await taskApi.getAll(token, undefined, undefined, undefined, undefined, undefined, undefined, undefined, selectedTagIds);
 
       if (result.success) {
         setTasks(result.data || []);
@@ -39,6 +80,19 @@ export default function TaskList() {
     } finally {
       setFetching(false);
     }
+  };
+
+  const handleTagFilterChange = (tagId: string) => {
+    setSelectedTagIds(prev =>
+      prev.includes(tagId)
+        ? prev.filter(id => id !== tagId)
+        : [...prev, tagId]
+    );
+  };
+
+  // Reset tag filters
+  const clearTagFilters = () => {
+    setSelectedTagIds([]);
   };
 
   // Show loading state while checking auth
@@ -159,12 +213,47 @@ export default function TaskList() {
   }
 
   return (
-    <ul className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 transition-all duration-300 hover:shadow-xl">
-      {tasks.map((task, index) => (
-        <div key={task.id} className={`transition-all duration-300 ${index === 0 ? 'pt-2' : ''} ${index === tasks.length - 1 ? 'pb-2' : ''}`}>
-          <TaskItem task={task} onTaskUpdate={fetchTasks} />
+    <div>
+      {/* Tag Filter Section */}
+      {tags.length > 0 && (
+        <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-gray-700">Filter by Tags</h3>
+            {selectedTagIds.length > 0 && (
+              <button
+                onClick={clearTagFilters}
+                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Clear Filters
+              </button>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {tags.map(tag => (
+              <button
+                key={tag.id}
+                onClick={() => handleTagFilterChange(tag.id)}
+                className={`px-3 py-1 text-xs rounded-full border transition-all duration-200 ${
+                  selectedTagIds.includes(tag.id)
+                    ? 'bg-indigo-100 border-indigo-300 text-indigo-800 font-medium'
+                    : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {tag.name}
+              </button>
+            ))}
+          </div>
         </div>
-      ))}
-    </ul>
+      )}
+
+      {/* Task List */}
+      <ul className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 transition-all duration-300 hover:shadow-xl">
+        {tasks.map((task, index) => (
+          <div key={task.id} className={`transition-all duration-300 ${index === 0 ? 'pt-2' : ''} ${index === tasks.length - 1 ? 'pb-2' : ''}`}>
+            <TaskItem task={task} onTaskUpdate={fetchTasks} />
+          </div>
+        ))}
+      </ul>
+    </div>
   );
 }

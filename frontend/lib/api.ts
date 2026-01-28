@@ -24,27 +24,61 @@ export interface RegisterResponse {
   created_at: string;
 }
 
+// Tag API Methods
+export interface Tag {
+  id: string;
+  name: string;
+  owner_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateTagRequest {
+  name: string;
+}
+
+export interface UpdateTagRequest {
+  name?: string;
+}
+
+export interface TagResponse extends Tag {}
+
 // Task API Methods
 export interface Task {
   id: string;
   title: string;
   description: string;
   completed: boolean;
+  priority: string;
+  due_date?: string;
+  recurrence_pattern?: string;
+  recurrence_end_date?: string;
   owner_id: string;
   created_at: string;
   updated_at: string;
+  tags?: TagResponse[];
 }
 
 export interface CreateTaskRequest {
   title: string;
   description?: string;
   completed?: boolean;
+  priority?: string;
+  due_date?: string;
+  recurrence_pattern?: string;
+  recurrence_end_date?: string;
+  tag_ids?: string[];
 }
 
 export interface UpdateTaskRequest {
   title?: string;
   description?: string;
   completed?: boolean;
+  priority?: string;
+  due_date?: string;
+  recurrence_pattern?: string;
+  recurrence_end_date?: string;
+  tag_ids?: string[];
 }
 
 export interface ApiResponse<T> {
@@ -142,9 +176,25 @@ export const authApi = {
 
 // Task API methods
 export const taskApi = {
-  getAll: async (token: string): Promise<ApiResponse<Task[]>> => {
+  getAll: async (token: string, search?: string, status?: string, priority?: string, date_from?: string, date_to?: string, sort_by?: string, sort_order?: string, tag_ids?: string[]): Promise<ApiResponse<Task[]>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks/`, {
+      // Build query parameters
+      const params = new URLSearchParams();
+      if (search) params.append('search', search);
+      if (status) params.append('status', status);
+      if (priority) params.append('priority', priority);
+      if (date_from) params.append('date_from', date_from);
+      if (date_to) params.append('date_to', date_to);
+      if (sort_by) params.append('sort_by', sort_by);
+      if (sort_order) params.append('sort_order', sort_order);
+      if (tag_ids && tag_ids.length > 0) {
+        tag_ids.forEach(tagId => params.append('tag_ids', tagId));
+      }
+
+      const queryString = params.toString();
+      const url = `${API_BASE_URL}/tasks/${queryString ? '?' + queryString : ''}`;
+
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -333,6 +383,211 @@ export const taskApi = {
         return {
           success: false,
           error: errorData || 'Failed to toggle task completion',
+          status: response.status
+        };
+      }
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Network error occurred',
+        status: 500
+      };
+    }
+  },
+
+  getUpcoming: async (token: string, hours: number = 24): Promise<ApiResponse<Task[]>> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/tasks/upcoming/${hours}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          success: true,
+          data,
+          status: response.status
+        };
+      } else {
+        const errorData = await response.text();
+        return {
+          success: false,
+          error: errorData || 'Failed to fetch upcoming tasks',
+          status: response.status
+        };
+      }
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Network error occurred',
+        status: 500
+      };
+    }
+  }
+};
+
+// Tag API methods
+export const tagApi = {
+  getAll: async (token: string): Promise<ApiResponse<Tag[]>> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/tags/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          success: true,
+          data,
+          status: response.status
+        };
+      } else {
+        const errorData = await response.text();
+        return {
+          success: false,
+          error: errorData || 'Failed to fetch tags',
+          status: response.status
+        };
+      }
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Network error occurred',
+        status: 500
+      };
+    }
+  },
+
+  getById: async (tagId: string, token: string): Promise<ApiResponse<Tag>> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/tags/${tagId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          success: true,
+          data,
+          status: response.status
+        };
+      } else {
+        const errorData = await response.text();
+        return {
+          success: false,
+          error: errorData || 'Failed to fetch tag',
+          status: response.status
+        };
+      }
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Network error occurred',
+        status: 500
+      };
+    }
+  },
+
+  create: async (tagData: CreateTagRequest, token: string): Promise<ApiResponse<Tag>> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/tags/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(tagData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          success: true,
+          data,
+          status: response.status
+        };
+      } else {
+        const errorData = await response.text();
+        return {
+          success: false,
+          error: errorData || 'Failed to create tag',
+          status: response.status
+        };
+      }
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Network error occurred',
+        status: 500
+      };
+    }
+  },
+
+  update: async (tagId: string, tagData: UpdateTagRequest, token: string): Promise<ApiResponse<Tag>> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/tags/${tagId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(tagData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          success: true,
+          data,
+          status: response.status
+        };
+      } else {
+        const errorData = await response.text();
+        return {
+          success: false,
+          error: errorData || 'Failed to update tag',
+          status: response.status
+        };
+      }
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Network error occurred',
+        status: 500
+      };
+    }
+  },
+
+  delete: async (tagId: string, token: string): Promise<ApiResponse<void>> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/tags/${tagId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          data: undefined,
+          status: response.status
+        };
+      } else {
+        const errorData = await response.text();
+        return {
+          success: false,
+          error: errorData || 'Failed to delete tag',
           status: response.status
         };
       }

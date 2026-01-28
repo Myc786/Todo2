@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import DashboardContent from './dashboard-content'; // Create a client component for the interactive parts
+import DashboardContent from './dashboard-content'; // Client component for the interactive parts
 import Header from '@/components/layout/header';
 import MainContent from '@/components/layout/main-content';
 

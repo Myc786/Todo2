@@ -10,8 +10,20 @@ interface Task {
   title: string;
   description: string;
   completed: boolean;
+  priority: string;
+  due_date?: string;
+  recurrence_pattern?: string;
+  recurrence_end_date?: string;
+  owner_id: string;
   createdAt: string;
   updatedAt?: string;
+  tags?: Array<{
+    id: string;
+    name: string;
+    owner_id: string;
+    created_at: string;
+    updated_at: string;
+  }>;
 }
 
 interface TaskItemProps {
@@ -105,6 +117,47 @@ export default function TaskItem({ task, onTaskUpdate }: TaskItemProps) {
             </div>
           </div>
           <div className="flex items-center space-x-2">
+            {/* Priority Badge */}
+            {task.priority && (
+              <div className="flex items-center">
+                <span className={`w-2 h-2 rounded-full mr-1 ${
+                  task.priority === 'high' ? 'bg-red-500' :
+                  task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                }`}></span>
+                <span className="capitalize text-xs px-2 py-1 rounded bg-gray-100">
+                  {task.priority}
+                </span>
+              </div>
+            )}
+
+            {/* Due Date Badge */}
+            {task.due_date && (
+              <div className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800">
+                {new Date(task.due_date).toLocaleDateString()}
+              </div>
+            )}
+
+            {/* Recurrence Badge */}
+            {task.recurrence_pattern && (
+              <div className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800">
+                {task.recurrence_pattern.charAt(0).toUpperCase() + task.recurrence_pattern.slice(1)} Recurring
+              </div>
+            )}
+
+            {/* Tags */}
+            {task.tags && task.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {task.tags.map(tag => (
+                  <span
+                    key={tag.id}
+                    className="text-xs px-2 py-1 rounded bg-indigo-100 text-indigo-800"
+                  >
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
+            )}
+
             <Badge variant={isCompleted ? 'success' : 'default'} className="transition-all duration-300 hover:scale-105">
               {isCompleted ? 'Completed' : 'Pending'}
             </Badge>
@@ -113,6 +166,8 @@ export default function TaskItem({ task, onTaskUpdate }: TaskItemProps) {
             </span>
           </div>
         </div>
+
+        {/* Task Actions */}
         <div className="mt-3 flex items-center justify-between transition-all duration-300">
           <div className="flex space-x-2">
             <button

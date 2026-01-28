@@ -9,6 +9,8 @@ from sqlmodel import SQLModel, create_engine
 from app.core.config import settings
 from app.models.user import User
 from app.models.task import Task
+from app.models.tag import Tag
+from app.models.task_tag_link import TaskTagLink
 
 def create_tables():
     print("Initializing database tables...")
