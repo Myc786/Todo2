@@ -1,8 +1,9 @@
 from sqlmodel import SQLModel, Field, Relationship
-from datetime import datetime
-from typing import Optional, TYPE_CHECKING, List
+from datetime import datetime, date
+from typing import Optional, TYPE_CHECKING, List, Union, Any
 from enum import Enum
 import uuid
+from pydantic import field_validator
 
 if TYPE_CHECKING:
     from .tag import Tag, TagResponse
@@ -32,10 +33,40 @@ class Task(TaskBase, table=True):
 
 class TaskCreate(TaskBase):
     priority: Optional[Priority] = None
-    due_date: Optional[datetime] = None
+    due_date: Optional[Union[datetime, date]] = None
     recurrence_pattern: Optional[str] = None
-    recurrence_end_date: Optional[datetime] = None
+    recurrence_end_date: Optional[Union[datetime, date]] = None
     tag_ids: Optional[List[str]] = []  # IDs of tags to associate with the task
+
+    @field_validator('due_date', 'recurrence_end_date')
+    @classmethod
+    def parse_datetime_or_date(cls, v: Any) -> Optional[datetime]:
+        if v is None:
+            return None
+
+        if isinstance(v, datetime):
+            return v
+        elif isinstance(v, date):
+            # Convert date to datetime at start of day
+            return datetime.combine(v, datetime.min.time())
+
+        # Try to parse as datetime string first
+        if isinstance(v, str):
+            # Handle ISO format datetime strings
+            if 'T' in v or 't' in v or '_' in v or ' ' in v:
+                try:
+                    return datetime.fromisoformat(v.replace('Z', '+00:00'))
+                except ValueError:
+                    pass
+
+            # Try to parse as date string and convert to datetime at start of day
+            try:
+                parsed_date = date.fromisoformat(v)
+                return datetime.combine(parsed_date, datetime.min.time())
+            except ValueError:
+                pass
+
+        raise ValueError(f"Unable to parse datetime or date from: {v}")
 
     class Config:
         json_schema_extra = {
@@ -56,10 +87,40 @@ class TaskUpdate(SQLModel):
     description: Optional[str] = Field(default=None, max_length=1000)
     completed: Optional[bool] = Field(default=None)
     priority: Optional[Priority] = None
-    due_date: Optional[datetime] = None
+    due_date: Optional[Union[datetime, date]] = None
     recurrence_pattern: Optional[str] = None
-    recurrence_end_date: Optional[datetime] = None
+    recurrence_end_date: Optional[Union[datetime, date]] = None
     tag_ids: Optional[List[str]] = None  # IDs of tags to associate with the task
+
+    @field_validator('due_date', 'recurrence_end_date')
+    @classmethod
+    def parse_datetime_or_date(cls, v: Any) -> Optional[datetime]:
+        if v is None:
+            return None
+
+        if isinstance(v, datetime):
+            return v
+        elif isinstance(v, date):
+            # Convert date to datetime at start of day
+            return datetime.combine(v, datetime.min.time())
+
+        # Try to parse as datetime string first
+        if isinstance(v, str):
+            # Handle ISO format datetime strings
+            if 'T' in v or 't' in v or '_' in v or ' ' in v:
+                try:
+                    return datetime.fromisoformat(v.replace('Z', '+00:00'))
+                except ValueError:
+                    pass
+
+            # Try to parse as date string and convert to datetime at start of day
+            try:
+                parsed_date = date.fromisoformat(v)
+                return datetime.combine(parsed_date, datetime.min.time())
+            except ValueError:
+                pass
+
+        raise ValueError(f"Unable to parse datetime or date from: {v}")
 
     class Config:
         json_schema_extra = {
