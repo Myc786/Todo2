@@ -81,7 +81,9 @@
       "Bash(findstr env)",
       "Bash(git commit -m \"Update Vercel deployment documentation and configuration\n\n- Created comprehensive Vercel deployment guide \\(VERCEL_DEPLOYMENT_UPDATE.md\\)\n- Updated deployment summary with current status and procedures\n- Verified frontend build success for production deployment\n- Documented environment variable configuration for frontend/backend integration\n- Added deployment files and configuration for Vercel deployment\n- Updated task status to reflect completed implementation\n- Prepared application for Vercel deployment with proper API integration\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\")",
       "Bash(git add .claude/settings.local.json)",
-      "Bash(git commit -m \"Clean up temporary settings file\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\")"
+      "Bash(git commit -m \"Clean up temporary settings file\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\")",
+      "Bash(npx vercel link)",
+      "Bash(npx vercel deploy --yes)"
     ]
   }
 }
