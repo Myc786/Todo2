@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, KeyboardEvent } from 'react';
-import { Badge } from '@/components/ui/badge';
+import Badge from '@/components/ui/badge';
 
 interface TagInputProps {
   value?: string[];
@@ -49,17 +49,18 @@ export default function TagInput({ value = [], onChange, placeholder = 'Add tags
     <div className="relative">
       <div className="flex flex-wrap gap-2 min-h-10 p-2 border border-gray-300 rounded-md bg-white">
         {value.map((tag) => (
-          <Badge
+          <div
             key={tag}
-            variant="secondary"
             className={`cursor-pointer transition-all duration-200 hover:scale-105 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-200'}`}
             onClick={() => handleTagClick(tag)}
           >
-            {tag}
-            {!disabled && (
-              <span className="ml-1 text-xs font-bold">×</span>
-            )}
-          </Badge>
+            <Badge className={`${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              {tag}
+              {!disabled && (
+                <span className="ml-1 text-xs font-bold">×</span>
+              )}
+            </Badge>
+          </div>
         ))}
         <input
           ref={inputRef}

@@ -16,6 +16,7 @@ interface TaskFormProps {
     priority?: string;
     due_date?: string;
     recurrence_pattern?: string;
+    recurrence_end_date?: string;
     tag_ids?: string[];
     tags?: Array<{ id: string; name: string }>;
   };

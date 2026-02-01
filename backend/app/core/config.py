@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     BETTER_AUTH_SECRET: str = os.getenv("BETTER_AUTH_SECRET", "")
     BETTER_AUTH_URL: str = os.getenv("BETTER_AUTH_URL", "http://localhost:8000")
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
+    ALLOWED_ORIGINS: str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001")
 
     # Validate required settings
     def validate(self):

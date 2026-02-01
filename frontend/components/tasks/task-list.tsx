@@ -2,31 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { taskApi } from '@/lib/api';
+import { taskApi, tagApi, Task, Tag } from '@/lib/api';
 import TaskItem from './task-item';
-
-interface Tag {
-  id: string;
-  name: string;
-  owner_id: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  completed: boolean;
-  priority: string;
-  due_date?: string;
-  recurrence_pattern?: string;
-  recurrence_end_date?: string;
-  owner_id: string;
-  created_at: string;
-  updated_at?: string;
-  tags?: Tag[];
-}
 
 export default function TaskList() {
   const { token, isAuthenticated, loading } = useAuth();

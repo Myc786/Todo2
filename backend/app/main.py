@@ -9,6 +9,7 @@ load_dotenv()
 
 from app.api.api_router import api_router
 from app.core.config import settings
+import os
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -30,13 +31,16 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Parse allowed origins from environment variable
+allowed_origins = [origin.strip() for origin in settings.ALLOWED_ORIGINS.split(",") if origin.strip()]
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 # Include API routes

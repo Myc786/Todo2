@@ -2,29 +2,8 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { taskApi } from '@/lib/api';
+import { taskApi, Task } from '@/lib/api';
 import Badge from '@/components/ui/badge';
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  completed: boolean;
-  priority: string;
-  due_date?: string;
-  recurrence_pattern?: string;
-  recurrence_end_date?: string;
-  owner_id: string;
-  createdAt: string;
-  updatedAt?: string;
-  tags?: Array<{
-    id: string;
-    name: string;
-    owner_id: string;
-    created_at: string;
-    updated_at: string;
-  }>;
-}
 
 interface TaskItemProps {
   task: Task;
@@ -162,7 +141,7 @@ export default function TaskItem({ task, onTaskUpdate }: TaskItemProps) {
               {isCompleted ? 'Completed' : 'Pending'}
             </Badge>
             <span className="text-xs text-gray-500 transition-all duration-300 hover:text-gray-700">
-              {task.createdAt}
+              {task.created_at}
             </span>
           </div>
         </div>

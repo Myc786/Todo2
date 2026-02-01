@@ -1,6 +1,15 @@
 // API Client Abstraction for Todo Application
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+
+// Add API version suffix for all requests
+const getApiUrl = (endpoint: string): string => {
+  // Ensure the API_BASE_URL ends with a slash and doesn't have /api/v1 already
+  const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+  // If the base URL doesn't already include the API version, append it
+  const finalBaseUrl = baseUrl.includes('/api/v1') ? baseUrl : `${baseUrl}/api/v1`;
+  return `${finalBaseUrl}${endpoint}`;
+};
 
 // Authentication API Methods
 export interface LoginCredentials {
@@ -92,7 +101,7 @@ export interface ApiResponse<T> {
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<ApiResponse<LoginResponse>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/signin`, {
+      const response = await fetch(getApiUrl('/auth/signin'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -129,7 +138,7 @@ export const authApi = {
 
   register: async (userData: RegisterCredentials): Promise<ApiResponse<RegisterResponse>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/`, {
+      const response = await fetch(getApiUrl('/auth/'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -192,7 +201,7 @@ export const taskApi = {
       }
 
       const queryString = params.toString();
-      const url = `${API_BASE_URL}/tasks/${queryString ? '?' + queryString : ''}`;
+      const url = `${getApiUrl('/tasks/')}${queryString ? '?' + queryString : ''}`;
 
       const response = await fetch(url, {
         headers: {
@@ -227,7 +236,7 @@ export const taskApi = {
 
   getById: async (taskId: string, token: string): Promise<ApiResponse<Task>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+      const response = await fetch(getApiUrl(`/tasks/${taskId}`), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -260,7 +269,7 @@ export const taskApi = {
 
   create: async (taskData: CreateTaskRequest, token: string): Promise<ApiResponse<Task>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks/`, {
+      const response = await fetch(getApiUrl('/tasks/'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -295,7 +304,7 @@ export const taskApi = {
 
   update: async (taskId: string, taskData: UpdateTaskRequest, token: string): Promise<ApiResponse<Task>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+      const response = await fetch(getApiUrl(`/tasks/${taskId}`), {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -330,7 +339,7 @@ export const taskApi = {
 
   delete: async (taskId: string, token: string): Promise<ApiResponse<void>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+      const response = await fetch(getApiUrl(`/tasks/${taskId}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -363,7 +372,7 @@ export const taskApi = {
 
   toggleCompletion: async (taskId: string, token: string): Promise<ApiResponse<Task>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks/${taskId}/complete`, {
+      const response = await fetch(getApiUrl(`/tasks/${taskId}/complete`), {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -397,7 +406,7 @@ export const taskApi = {
 
   getUpcoming: async (token: string, hours: number = 24): Promise<ApiResponse<Task[]>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks/upcoming/${hours}`, {
+      const response = await fetch(getApiUrl(`/tasks/upcoming/${hours}`), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -433,7 +442,7 @@ export const taskApi = {
 export const tagApi = {
   getAll: async (token: string): Promise<ApiResponse<Tag[]>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tags/`, {
+      const response = await fetch(getApiUrl('/tags/'), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -466,7 +475,7 @@ export const tagApi = {
 
   getById: async (tagId: string, token: string): Promise<ApiResponse<Tag>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tags/${tagId}`, {
+      const response = await fetch(getApiUrl(`/tags/${tagId}`), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -499,7 +508,7 @@ export const tagApi = {
 
   create: async (tagData: CreateTagRequest, token: string): Promise<ApiResponse<Tag>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tags/`, {
+      const response = await fetch(getApiUrl('/tags/'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -534,7 +543,7 @@ export const tagApi = {
 
   update: async (tagId: string, tagData: UpdateTagRequest, token: string): Promise<ApiResponse<Tag>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tags/${tagId}`, {
+      const response = await fetch(getApiUrl(`/tags/${tagId}`), {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -569,7 +578,7 @@ export const tagApi = {
 
   delete: async (tagId: string, token: string): Promise<ApiResponse<void>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/tags/${tagId}`, {
+      const response = await fetch(getApiUrl(`/tags/${tagId}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
